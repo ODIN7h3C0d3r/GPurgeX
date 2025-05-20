@@ -1,0 +1,28 @@
+{
+  "gnome": [
+    "decibels",
+    "gnome-calculator",
+    "gnome-calendar",
+    "gnome-snapshot",
+    "gnome-characters",
+    "gnome-clocks",
+    "gnome-connections",
+    "gnome-contacts",
+    "yelp",
+    "baobab",
+    "gnome-disk-utility",
+    "simple-scan",
+    "evince",
+    "gnome-font-viewer",
+    "gnome-maps",
+    "gnome-logs",
+    "gnome-music",
+    "gnome-system-monitor",
+    "gnome-software",
+    "gnome-text-editor",
+    "gnome-tour",
+    "totem",
+    "gnome-weather",
+    "epiphany"
+  ]
+}
