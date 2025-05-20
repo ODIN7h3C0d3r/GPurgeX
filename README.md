@@ -1,23 +1,22 @@
 # GPurgeX
 
+A modular, cross-platform debloating and package management toolkit for Linux and BSD. GPurgeX is designed for versatility, automation, and extensibility—whether you’re a casual user, power user, or developer.
+
 ---
 
-## For Everyone (Normal User)
+## 1. Overview
 
-**GPurgeX** is your all-in-one, safe, and powerful tool to remove unwanted desktop apps and bloat from your Linux or BSD system. It works with all major package managers, supports dry-run simulation, and can even restore what you remove!
+- **Purpose:** Remove unwanted desktop apps and system bloat, with full backup/restore, dry-run, and multi-manager support.
+- **Supported Managers:** apt, dnf, pacman, zypper, apk, pkg, flatpak, snapd (easily extensible).
+- **Modes:** Dry-run, interactive, unattended, parallel, and restore.
+- **Smart:** Auto-detects desktop environment and package manager(s).
 
-- **No more bloat:** Remove GNOME, KDE, Flatpak, Snap, and more.
-- **Safe:** Try a dry-run first, see what will be removed.
-- **Easy restore:** Accidentally removed something? Restore it with one command.
-- **Smart:** Detects your desktop and package manager automatically.
-- **Interactive:** Pick what you want to remove with a beautiful menu (if `whiptail` is installed).
-- **Unattended:** Automate everything for scripts or mass deployments.
+---
 
-
-### Quick Start
+## 2. Quick Start
 
 ```sh
-# Simulate what would be removed (safe!)
+# Simulate (safe, no changes)
 bash gpurgex.sh --dry-run
 
 # Actually remove bloat (be careful!)
@@ -29,73 +28,107 @@ gpurgex.sh --restore
 
 ---
 
-## For Power Users
+## 3. Modular Usage
 
-- **Custom groups:** Add your own package groups in `packages.json` (e.g., KDE, XFCE, custom apps).
-- **Parallel removal:** Use `--dual-mode` for fast, parallel uninstalls.
-- **Unattended mode:** Use `--unattended` for zero prompts.
-- **Interactive selection:** Use `--interactive` for a TUI checklist.
-- **Full logging:** All actions are logged to `/var/log/gnome-debloat.log`.
-- **Backup/restore:** All removed packages are backed up for one-command restore.
-- **Multi-manager:** Use `--detect-all` to remove bloat from all detected package managers (apt, dnf, pacman, zypper, apk, pkg, flatpak, snapd).
+### 3.1. Groups & Customization
 
-
-### Example Power Usage
+- **Default groups:** GNOME, KDE, XFCE, Flatpak, Snap, etc.
+- **Custom groups:** Add your own in `packages.json`.
+- **Select group:**
 
 ```sh
-# Remove all GNOME and Flatpak bloat, unattended, and in parallel
-gpurgex.sh --group gnome --dual-mode --unattended
+gpurgex.sh --group kde --dry-run
 gpurgex.sh --group flatpak --dual-mode --unattended
-
-# Remove from all detected managers
-gpurgex.sh --detect-all --unattended
 ```
 
----
+### 3.2. Custom Package Lists
 
-## For Developers
-
-- **Modular:** Add new package managers by dropping a script in `lib/pm-*.sh`.
-- **JSON-driven:** Add/remove package groups in `packages.json`.
-- **Hooks:** All core logic is in functions, easy to extend.
-- **Restore logic:** Real package reinstall for all supported managers.
-- **Error handling:** Robust, with traps and clear logs.
-- **Beautiful CLI:** Interactive TUI with `whiptail` (or extend with `gum`, `dialog`, etc).
-- **Auto-detect DE:** Detects GNOME, KDE, XFCE, LXDE, MATE, Cinnamon, etc.
-- **Flags:**
-  - `--dry-run, -d`: Simulate only
-  - `--file, -f`: Use custom package list
-  - `--group`: Use a specific group from `packages.json`
-  - `--detect-all`: Remove from all detected managers
-  - `--unattended`: No prompts
-  - `--dual-mode`: Parallel and interactive
-  - `--restore`: Restore from backup
-  - `--interactive`: TUI checklist
-
-
-### Example Developer Extension
+- **Plain text:** One package per line.
+- **JSON:** Add arrays to `packages.json`.
+- **Usage:**
 
 ```sh
-# Add a new package manager
-cp lib/pm-apt.sh lib/pm-homebrew.sh
-# Edit functions for Homebrew logic
-# Add detection in gpurgex.sh
+gpurgex.sh --file mylist.txt --dry-run
+gpurgex.sh --file packages.json --group kde
 ```
 
 ---
 
-## How it Works
+## 4. Modes & Flags
 
-- **Auto-detects** your desktop and package manager.
-- **Loads** the right package group from `packages.json`.
-- **Interactive** or unattended removal, with dry-run support.
-- **Backs up** all removed packages for easy restore.
-- **Parallel** removal for speed (dual-mode).
-- **Logs** everything for review and troubleshooting.
+| Flag            | Description                                              |
+|-----------------|---------------------------------------------------------|
+| `--dry-run, -d` | Simulate only, no changes                               |
+| `--file, -f`    | Use custom package list (text or JSON)                  |
+| `--group`       | Use a specific group from `packages.json`               |
+| `--detect-all`  | Remove from all detected managers                       |
+| `--unattended`  | No prompts, for automation                              |
+| `--dual-mode`   | Parallel and interactive removal                        |
+| `--restore`     | Restore all removed packages from backup                |
+| `--interactive` | TUI checklist for package selection (needs whiptail)    |
+| `--help, -h`    | Show help                                               |
 
 ---
 
-## Example `packages.json`
+## 5. Interactive & Automation
+
+- **Interactive:**
+
+```sh
+gpurgex.sh --interactive
+```
+(Requires `whiptail`)
+
+- **Unattended:**
+
+```sh
+gpurgex.sh --unattended --group gnome
+```
+
+- **Parallel:**
+
+```sh
+gpurgex.sh --dual-mode --group kde
+```
+
+---
+
+## 6. Backup & Restore
+
+- **Backup:** All removed packages are saved to `removed_packages_backup.txt`.
+- **Restore:**
+
+```sh
+gpurgex.sh --restore
+```
+(Restores using the same package manager and group.)
+
+---
+
+## 7. Extending GPurgeX
+
+### 7.1. Add a New Package Manager
+
+1. Copy an existing module in `lib/` (e.g., `cp lib/pm-apt.sh lib/pm-new.sh`).
+2. Implement the required functions:
+   - `pm_check_installed`, `pm_remove_package`, `pm_remove_package_simulate`, `pm_autoremove`, `pm_autoremove_simulate`, `pm_clean`, `pm_clean_simulate`
+3. Add detection logic in `gpurgex.sh`.
+
+### 7.2. Add a New Group
+
+- Edit `packages.json`:
+
+```json
+{
+  "gnome": ["decibels", ...],
+  "kde": ["kcalc", ...],
+  "mygroup": ["foo", "bar"]
+}
+```
+
+---
+
+## 8. Example `packages.json`
 
 ```json
 {
@@ -108,22 +141,22 @@ cp lib/pm-apt.sh lib/pm-homebrew.sh
 
 ---
 
-## Troubleshooting & Tips
+## 9. Troubleshooting
 
-- **Missing a package manager?** Add a new script in `lib/` and detection logic in `gpurgex.sh`.
+- **Missing a manager?** Add a script in `lib/` and detection in `gpurgex.sh`.
+- **Restore not working?** Ensure backup exists and manager is supported.
 - **Want a GUI?** Use `--interactive` or extend with your favorite TUI/GUI toolkit.
-- **Restore not working?** Make sure your backup file exists and your package manager is supported.
 - **Need more speed?** Use `--dual-mode` for parallel removals.
 
 ---
 
-## License
+## 10. License
 
 MIT License. See [LICENSE](LICENSE).
 
 ---
 
-## Authors & Contributions
+## 11. Authors & Contributions
 
 - Main author: [Your Name]
 - Contributions welcome! Open an issue or PR.
