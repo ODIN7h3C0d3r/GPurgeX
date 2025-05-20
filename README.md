@@ -158,5 +158,5 @@ MIT License. See [LICENSE](LICENSE).
 
 ## 11. Authors & Contributions
 
-- Main author: [Your Name]
+- Main author: [ODIN7h3C0d3r]
 - Contributions welcome! Open an issue or PR.
